@@ -1,5 +1,5 @@
 // import React, { useState } from 'react';
-// import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+// import { BrowserRouter as Router, Route, Link, Routes, Navigate } from 'react-router-dom';
 // import { createBrowserHistory } from 'history';
 // import Login from './Login';
 // import Registration from './Registration';
@@ -42,6 +42,7 @@
 //       setCurrentUser(user);
 //       setLoggedIn(true);
 //       setError('');
+//       history.push('/'); // Redirect to homepage after login
 //     } else {
 //       setError('Invalid username or password');
 //     }
@@ -50,6 +51,7 @@
 //   const handleLogout = () => {
 //     setCurrentUser(null);
 //     setLoggedIn(false);
+//     history.push('/login'); // Redirect to login page after logout
 //   };
 
 //   const grantDashboardAccess = (user) => {
@@ -65,8 +67,8 @@
 //     if (currentUser.role === 'superUser' || currentUser.dashboardAccess.includes(currentUser.username)) {
 //       return true;
 //     } else {
-//       // Display an alert if the user doesn't have access
-//       alert("You don't have access to the dashboard!");
+//       // Redirect to homepage if the user doesn't have access
+//       history.push('/');
 //       return false;
 //     }
 //   };
@@ -88,7 +90,11 @@
 //         {!loggedIn ? (
 //           <Routes>
 //             <Route path="/registration" element={<Registration handleRegistration={handleRegistration} />} />
-//             <Route path="/" element={<Login handleLogin={handleLogin} error={error} />} />
+//             <Route path="/login" element={<Login handleLogin={handleLogin} error={error} />} />
+//             <Route
+//               path="/*"
+//               element={<Navigate to="/login" />} // Redirect to /login for any unknown routes
+//             />
 //           </Routes>
 //         ) : (
 //           <div>
@@ -98,7 +104,10 @@
 //                   <Link to="/">Home</Link>
 //                 </li>
 //                 <li>
-//                   <Link to="/dashboard" onClick={() => canAccessDashboard() && history.push('/dashboard')}>
+//                   <Link
+//                     to="/dashboard"
+//                     onClick={() => canAccessDashboard() && history.push('/dashboard')}
+//                   >
 //                     Dashboard
 //                   </Link>
 //                 </li>
@@ -114,7 +123,10 @@
 //             </nav>
 //             <Routes>
 //               <Route path="/" element={<HomeScreen />} />
-//               <Route path="/dashboard" element={canAccessDashboard() ? <DashboardScreen /> : null} />
+//               <Route
+//                 path="/dashboard"
+//                 element={canAccessDashboard() ? <DashboardScreen /> : null}
+//               />
 //               {currentUser.role === 'superUser' && (
 //                 <Route path="/role" element={<RoleScreen grantDashboardAccess={grantDashboardAccess} />} />
 //               )}
@@ -195,7 +207,10 @@ const App = () => {
   };
 
   const canAccessDashboard = () => {
-    if (currentUser.role === 'superUser' || currentUser.dashboardAccess.includes(currentUser.username)) {
+    if (
+      currentUser.role === 'superUser' ||
+      currentUser.dashboardAccess.includes(currentUser.username)
+    ) {
       return true;
     } else {
       // Redirect to homepage if the user doesn't have access
@@ -203,6 +218,7 @@ const App = () => {
       return false;
     }
   };
+
 
   const handleRegistration = (username, password) => {
     // For simplicity, let's assume we're adding a new user with 'user' role
@@ -256,10 +272,15 @@ const App = () => {
               <Route path="/" element={<HomeScreen />} />
               <Route
                 path="/dashboard"
-                element={canAccessDashboard() ? <DashboardScreen /> : null}
+                element={canAccessDashboard() ? <DashboardScreen /> : <Navigate to="/" />}
               />
+
+
               {currentUser.role === 'superUser' && (
-                <Route path="/role" element={<RoleScreen grantDashboardAccess={grantDashboardAccess} />} />
+                <Route
+                  path="/role"
+                  element={<RoleScreen users={users} grantDashboardAccess={grantDashboardAccess} />}
+                />
               )}
             </Routes>
           </div>
