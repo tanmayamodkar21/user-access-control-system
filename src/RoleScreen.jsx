@@ -1,43 +1,19 @@
-// import React, { useState } from 'react';
-
-// const RoleScreen = ({ grantDashboardAccess }) => {
-//   const [newUser, setNewUser] = useState('');
-
-//   const handleGrantAccess = () => {
-//     grantDashboardAccess(newUser);
-//     setNewUser('');
-//   };
-
-//   return (
-//     <div>
-//       <h2>Role Screen</h2>
-//       <input
-//         type="text"
-//         placeholder="Enter username to grant dashboard access"
-//         value={newUser}
-//         onChange={(e) => setNewUser(e.target.value)}
-//       />
-//       <button onClick={handleGrantAccess}>Grant Access</button>
-//     </div>
-//   );
-// };
-
-// export default RoleScreen;
-
-
 import React, { useState } from 'react';
 
-const RoleScreen = ({ users, grantDashboardAccess }) => {
+const RoleScreen = ({ users, grantDashboardAccess, revokeDashboardAccess }) => {
   const [newUser, setNewUser] = useState('');
-
-  // Check if 'users' object is available and not empty
-  if (!users || Object.keys(users).length === 0) {
-    return <div>No users available</div>;
-  }
+  const [selectedUser, setSelectedUser] = useState('');
 
   const handleGrantAccess = () => {
     grantDashboardAccess(newUser);
     setNewUser('');
+  };
+
+  const handleRevokeAccess = () => {
+    // Implement the logic to revoke access for the selected user
+    // Assuming a user can only be selected for revoking if they were granted access before
+    revokeDashboardAccess(selectedUser);
+    setSelectedUser('');
   };
 
   return (
@@ -60,6 +36,25 @@ const RoleScreen = ({ users, grantDashboardAccess }) => {
         ))}
       </div>
       <button onClick={handleGrantAccess}>Grant Access</button>
+
+      <div>
+        <h3>Revoke Access</h3>
+        {Object.keys(users).map((username) => (
+          <div key={username}>
+            <label>
+              <input
+                type="radio"
+                name="revokeAccess"
+                value={username}
+                checked={selectedUser === username}
+                onChange={() => setSelectedUser(username)}
+              />
+              {username}
+            </label>
+          </div>
+        ))}
+        <button onClick={handleRevokeAccess}>Revoke Access</button>
+      </div>
     </div>
   );
 };
